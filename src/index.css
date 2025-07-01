@@ -1,0 +1,254 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Neomorphism Light Theme */
+    --neo-bg: #e0e5ec;
+    --neo-light: #ffffff;
+    --neo-dark: #a3b1c6;
+    --neo-text: #2c3e50;
+    --neo-accent: #3498db;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Neomorphism Dark Theme */
+    --neo-bg: #2c3e50;
+    --neo-light: #3a4e63;
+    --neo-dark: #1e2a38;
+    --neo-text: #ecf0f1;
+    --neo-accent: #3498db;
+  }
+
+  /* Custom color themes */
+  .theme-purple {
+    --neo-bg: #e8e2f0;
+    --neo-light: #f5f1f9;
+    --neo-dark: #c9bdd4;
+    --neo-text: #4a3c5a;
+    --neo-accent: #9b59b6;
+  }
+
+  .theme-green {
+    --neo-bg: #e8f5e8;
+    --neo-light: #f1f9f1;
+    --neo-dark: #c4d9c4;
+    --neo-text: #2d4a2d;
+    --neo-accent: #27ae60;
+  }
+
+  .theme-orange {
+    --neo-bg: #f5e8d3;
+    --neo-light: #f9f1e6;
+    --neo-dark: #d4c4a8;
+    --neo-text: #5a4a2d;
+    --neo-accent: #e67e22;
+  }
+
+  .theme-pink {
+    --neo-bg: #f0e2e8;
+    --neo-light: #f9f1f5;
+    --neo-dark: #d4bdc9;
+    --neo-text: #5a3c4a;
+    --neo-accent: #e91e63;
+  }
+
+  .theme-blue {
+    --neo-bg: #e2f0f8;
+    --neo-light: #f1f9fc;
+    --neo-dark: #bdd4e0;
+    --neo-text: #1a3c5a;
+    --neo-accent: #2980b9;
+  }
+
+  .theme-teal {
+    --neo-bg: #e0f2f1;
+    --neo-light: #f1f9f8;
+    --neo-dark: #c2d6d4;
+    --neo-text: #2d4a45;
+    --neo-accent: #26a69a;
+  }
+
+  .theme-indigo {
+    --neo-bg: #e8eaf6;
+    --neo-light: #f3f4fc;
+    --neo-dark: #c5cae9;
+    --neo-text: #3f51b5;
+    --neo-accent: #3f51b5;
+  }
+
+  .theme-amber {
+    --neo-bg: #fff8e1;
+    --neo-light: #fffcf5;
+    --neo-dark: #f0e68c;
+    --neo-text: #5a4a00;
+    --neo-accent: #ffc107;
+  }
+
+  .theme-rose {
+    --neo-bg: #fce4ec;
+    --neo-light: #fdf2f7;
+    --neo-dark: #f8bbd9;
+    --neo-text: #880e4f;
+    --neo-accent: #e91e63;
+  }
+
+  .theme-violet {
+    --neo-bg: #f3e5f5;
+    --neo-light: #faf2fb;
+    --neo-dark: #e1bee7;
+    --neo-text: #4a148c;
+    --neo-accent: #9c27b0;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-neo-bg text-neo-text transition-all duration-500 ease-in-out;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+@layer components {
+  .neo-button {
+    @apply rounded-xl px-4 py-2 bg-neo-bg text-neo-text shadow-neo-outset 
+           hover:shadow-neo-flat active:shadow-neo-pressed 
+           transition-all duration-300 transform hover:scale-105 active:scale-95
+           hover:translate-y-[-2px] active:translate-y-0;
+  }
+
+  .neo-input {
+    @apply rounded-xl px-4 py-3 bg-neo-bg text-neo-text shadow-neo-inset 
+           border-none outline-none focus:shadow-neo-pressed
+           transition-all duration-300 focus:scale-[1.02] hover:shadow-neo-flat;
+  }
+
+  .neo-input::placeholder {
+    color: var(--neo-text);
+    opacity: 0.5;
+  }
+
+  .neo-panel {
+    @apply rounded-2xl bg-neo-bg shadow-neo-outset p-6 
+           transition-all duration-500 hover:shadow-neo-flat
+           hover:translate-y-[-1px] animate-float;
+  }
+
+  .neo-textarea {
+    @apply rounded-xl p-4 bg-neo-bg text-neo-text shadow-neo-inset 
+           border-none outline-none resize-none 
+           focus:shadow-neo-pressed transition-all duration-300
+           focus:scale-[1.01] hover:shadow-neo-flat;
+  }
+
+  .neo-textarea::placeholder {
+    color: var(--neo-text);
+    opacity: 0.5;
+  }
+
+  .neo-sidebar-item {
+    @apply transition-all duration-300 hover:translate-x-2 
+           hover:shadow-neo-flat active:scale-95;
+    background: linear-gradient(145deg, var(--neo-bg), var(--neo-light));
+  }
+
+  .neo-sidebar-item:hover {
+    background: linear-gradient(145deg, var(--neo-light), var(--neo-bg));
+    opacity: 0.9;
+  }
+
+  .neo-theme-button {
+    @apply transition-all duration-300 hover:scale-110 hover:rotate-6
+           active:scale-95 active:rotate-0;
+  }
+
+  .neo-note-card {
+    @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-neo-outset
+           hover:translate-y-[-2px] active:scale-[0.98];
+  }
+}
