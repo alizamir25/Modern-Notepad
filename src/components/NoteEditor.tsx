@@ -13,16 +13,20 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, onNoteChange, sett
   const [content, setContent] = useState(note?.content || '');
   const [isTitleFocused, setIsTitleFocused] = useState(false);
   const [isContentFocused, setIsContentFocused] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
+  const [animatedTitleChars, setAnimatedTitleChars] = useState<Set<number>>(new Set());
+  const [animatedContentChars, setAnimatedContentChars] = useState<Set<number>>(new Set());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
-  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const prevTitleRef = useRef(title);
+  const prevContentRef = useRef(content);
 
   useEffect(() => {
     if (note) {
       setTitle(note.title);
       setContent(note.content);
+      prevTitleRef.current = note.title;
+      prevContentRef.current = note.content;
     }
   }, [note]);
 
@@ -50,26 +54,60 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, onNoteChange, sett
     };
   }, [title, content, settings.autoSave, note, onNoteChange]);
 
-  const handleTypingAnimation = () => {
-    setIsTyping(true);
+  const animateNewChars = (newText: string, oldText: string, setAnimatedChars: React.Dispatch<React.SetStateAction<Set<number>>>) => {
+    const newChars = new Set<number>();
     
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
+    // Find which characters are new or changed
+    for (let i = 0; i < newText.length; i++) {
+      if (i >= oldText.length || newText[i] !== oldText[i]) {
+        newChars.add(i);
+      }
     }
     
-    typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false);
-    }, 150);
+    if (newChars.size > 0) {
+      setAnimatedChars(newChars);
+      
+      // Clear animations after a short delay
+      setTimeout(() => {
+        setAnimatedChars(new Set());
+      }, 600);
+    }
   };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-    handleTypingAnimation();
+    const newTitle = e.target.value;
+    animateNewChars(newTitle, prevTitleRef.current, setAnimatedTitleChars);
+    setTitle(newTitle);
+    prevTitleRef.current = newTitle;
   };
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
-    handleTypingAnimation();
+    const newContent = e.target.value;
+    animateNewChars(newContent, prevContentRef.current, setAnimatedContentChars);
+    setContent(newContent);
+    prevContentRef.current = newContent;
+  };
+
+  const renderAnimatedText = (text: string, animatedChars: Set<number>, className: string = '') => {
+    return (
+      <div className={`absolute inset-0 pointer-events-none ${className}`} style={{ padding: 'inherit' }}>
+        {text.split('').map((char, index) => (
+          <span
+            key={`${index}-${char}`}
+            className={`inline-block ${animatedChars.has(index) ? 'animate-bounce-subtle' : ''}`}
+            style={{
+              animationDelay: `${index * 20}ms`,
+              animationDuration: '0.6s',
+              transform: animatedChars.has(index) ? 'translateY(-2px) scale(1.1)' : 'none',
+              color: animatedChars.has(index) ? 'var(--neo-accent)' : 'transparent',
+              transition: 'all 0.3s ease-out',
+            }}
+          >
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        ))}
+      </div>
+    );
   };
 
   const getLineNumbers = () => {
@@ -106,28 +144,35 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, onNoteChange, sett
     <div className="flex-1 flex flex-col h-full animate-fade-in">
       {/* Title Input */}
       <div className="p-6 border-b border-neo-text/10">
-        <input
-          ref={titleRef}
-          type="text"
-          value={title}
-          onChange={handleTitleChange}
-          onFocus={() => setIsTitleFocused(true)}
-          onBlur={() => setIsTitleFocused(false)}
-          placeholder="Note title..."
-          className={`neo-input w-full text-xl font-semibold transition-all duration-300 ${
-            isTitleFocused 
-              ? 'scale-[1.01] shadow-neo-pressed' 
-              : 'shadow-neo-inset hover:shadow-neo-flat'
-          } ${
-            isTyping 
-              ? 'animate-pulse-neo shadow-neo-pressed scale-[1.01]' 
-              : ''
-          }`}
-          style={{ 
-            fontSize: settings.fontSize + 4,
-            fontFamily: settings.fontFamily 
-          }}
-        />
+        <div className="relative">
+          <input
+            ref={titleRef}
+            type="text"
+            value={title}
+            onChange={handleTitleChange}
+            onFocus={() => setIsTitleFocused(true)}
+            onBlur={() => setIsTitleFocused(false)}
+            placeholder="Note title..."
+            className={`neo-input w-full text-xl font-semibold transition-all duration-300 relative z-10 ${
+              isTitleFocused 
+                ? 'scale-[1.01] shadow-neo-pressed' 
+                : 'shadow-neo-inset hover:shadow-neo-flat'
+            }`}
+            style={{ 
+              fontSize: settings.fontSize + 4,
+              fontFamily: settings.fontFamily,
+              backgroundColor: 'transparent',
+            }}
+          />
+          <div 
+            className="absolute inset-0 neo-input pointer-events-none"
+            style={{ 
+              fontSize: settings.fontSize + 4,
+              fontFamily: settings.fontFamily,
+            }}
+          />
+          {renderAnimatedText(title, animatedTitleChars, 'text-xl font-semibold')}
+        </div>
       </div>
 
       {/* Content Editor */}
@@ -138,7 +183,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, onNoteChange, sett
           </div>
         )}
         
-        <div className="flex-1">
+        <div className="flex-1 relative">
           <textarea
             ref={textareaRef}
             value={content}
@@ -146,15 +191,21 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, onNoteChange, sett
             onFocus={() => setIsContentFocused(true)}
             onBlur={() => setIsContentFocused(false)}
             placeholder="Start writing your note..."
-            className={`neo-textarea w-full h-full min-h-[400px] transition-all duration-300 ${
+            className={`neo-textarea w-full h-full min-h-[400px] transition-all duration-300 relative z-10 ${
               isContentFocused 
                 ? 'scale-[1.005] shadow-neo-pressed' 
                 : 'shadow-neo-inset hover:shadow-neo-flat'
-            } ${
-              isTyping 
-                ? 'animate-pulse-neo shadow-neo-pressed scale-[1.005]' 
-                : ''
             }`}
+            style={{
+              fontSize: settings.fontSize,
+              fontFamily: settings.fontFamily,
+              whiteSpace: settings.wordWrap ? 'pre-wrap' : 'pre',
+              wordWrap: settings.wordWrap ? 'break-word' : 'normal',
+              backgroundColor: 'transparent',
+            }}
+          />
+          <div 
+            className="absolute inset-0 neo-textarea pointer-events-none"
             style={{
               fontSize: settings.fontSize,
               fontFamily: settings.fontFamily,
@@ -162,6 +213,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, onNoteChange, sett
               wordWrap: settings.wordWrap ? 'break-word' : 'normal',
             }}
           />
+          {renderAnimatedText(content, animatedContentChars)}
         </div>
       </div>
     </div>

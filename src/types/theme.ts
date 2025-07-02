@@ -28,4 +28,7 @@ export interface Note {
   createdAt: Date;
   updatedAt: Date;
   tags: string[];
+  archived?: boolean;
+  deleted?: boolean;
+  deletedAt?: Date;
 }

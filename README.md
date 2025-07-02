@@ -1,7 +1,6 @@
-
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in .
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -9,7 +8,7 @@ Follow these steps:
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
-git clone https://github.com/alizamir25/Modern-Notepad
+git clone <YOUR_GIT_URL>
 
 # Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
@@ -44,3 +43,15 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+
+## How can I deploy this project?
+
+Simply open [](https://.dev/projects/57199736-3e88-4caa-9822-2cea0790c9b1) and click on Share -> Publish.
+
+## Can I connect a custom domain to my  project?
+
+Yes, you can!
+
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+
+Read more here: [Setting up a custom domain](https://docs..dev/tips-tricks/custom-domain#step-by-step-guide)

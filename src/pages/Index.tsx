@@ -27,10 +27,11 @@ const Index = () => {
     lineNumbers: false,
   });
 
-  // Load the first note on initial load
+  // Load the first active note on initial load
   useEffect(() => {
-    if (notes.length > 0 && !currentNote) {
-      setCurrentNote(notes[0]);
+    const activeNotes = notes.filter(note => !note.archived && !note.deleted);
+    if (activeNotes.length > 0 && !currentNote) {
+      setCurrentNote(activeNotes[0]);
     }
   }, [notes, currentNote]);
 
@@ -42,6 +43,8 @@ const Index = () => {
       createdAt: new Date(),
       updatedAt: new Date(),
       tags: [],
+      archived: false,
+      deleted: false,
     };
     
     setNotes(prev => [newNote, ...prev]);
@@ -61,18 +64,60 @@ const Index = () => {
   };
 
   const deleteNote = (noteId: string) => {
-    setNotes(prev => prev.filter(note => note.id !== noteId));
+    setNotes(prev => prev.map(note => 
+      note.id === noteId 
+        ? { ...note, deleted: true, deletedAt: new Date() }
+        : note
+    ));
     
     if (currentNote?.id === noteId) {
-      const remainingNotes = notes.filter(note => note.id !== noteId);
-      setCurrentNote(remainingNotes.length > 0 ? remainingNotes[0] : null);
+      const remainingActiveNotes = notes.filter(note => 
+        note.id !== noteId && !note.archived && !note.deleted
+      );
+      setCurrentNote(remainingActiveNotes.length > 0 ? remainingActiveNotes[0] : null);
     }
     
     toast({
-      title: "Note deleted",
-      description: "The note has been deleted.",
-      variant: "destructive",
+      title: "Note moved to trash",
+      description: "The note has been moved to trash. You can restore it later.",
     });
+  };
+
+  const archiveNote = (noteId: string) => {
+    setNotes(prev => prev.map(note => 
+      note.id === noteId 
+        ? { ...note, archived: true }
+        : note
+    ));
+    
+    if (currentNote?.id === noteId) {
+      const remainingActiveNotes = notes.filter(note => 
+        note.id !== noteId && !note.archived && !note.deleted
+      );
+      setCurrentNote(remainingActiveNotes.length > 0 ? remainingActiveNotes[0] : null);
+    }
+    
+    toast({
+      title: "Note archived",
+      description: "The note has been archived.",
+    });
+  };
+
+  const restoreNote = (noteId: string) => {
+    const noteToRestore = notes.find(note => note.id === noteId);
+    
+    setNotes(prev => prev.map(note => 
+      note.id === noteId 
+        ? { ...note, archived: false, deleted: false, deletedAt: undefined }
+        : note
+    ));
+    
+    if (noteToRestore) {
+      toast({
+        title: "Note restored",
+        description: `The note "${noteToRestore.title || 'Untitled'}" has been restored.`,
+      });
+    }
   };
 
   const handleThemeChange = (newTheme: string) => {
@@ -87,22 +132,32 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-neo-bg flex relative overflow-hidden">
-      {/* Main Content */}
-      <NoteSidebar
-        notes={notes}
-        currentNote={currentNote}
-        onNoteSelect={setCurrentNote}
-        onNoteCreate={createNote}
-        onNoteDelete={deleteNote}
-        onShowSettings={() => setShowSettings(true)}
-        onShowThemes={() => setShowThemes(true)}
-      />
+      {/* Main Content - Responsive Layout */}
+      <div className="flex w-full min-h-screen">
+        {/* Sidebar - Fixed width on larger screens, full width on mobile */}
+        <div className="w-full sm:w-80 lg:w-96 xl:w-80 flex-shrink-0">
+          <NoteSidebar
+            notes={notes}
+            currentNote={currentNote}
+            onNoteSelect={setCurrentNote}
+            onNoteCreate={createNote}
+            onNoteDelete={deleteNote}
+            onNoteArchive={archiveNote}
+            onNoteRestore={restoreNote}
+            onShowSettings={() => setShowSettings(true)}
+            onShowThemes={() => setShowThemes(true)}
+          />
+        </div>
 
-      <NoteEditor
-        note={currentNote}
-        onNoteChange={updateNote}
-        settings={settings}
-      />
+        {/* Note Editor - Takes remaining space */}
+        <div className="flex-1 min-w-0 hidden sm:block">
+          <NoteEditor
+            note={currentNote}
+            onNoteChange={updateNote}
+            settings={settings}
+          />
+        </div>
+      </div>
 
       {/* Settings Panel Overlay */}
       {showSettings && (
